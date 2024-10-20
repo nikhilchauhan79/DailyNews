@@ -1,6 +1,7 @@
 package com.example.dailynews.data.repository
 
 import com.example.dailynews.data.db.entities.ArticleEntity
+import com.example.dailynews.data.db.entities.SourceXEntity
 import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.utils.RemoteToLocalMapper
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,30 +53,23 @@ class NewsRepositoryImpl(
       false
     )
 
-//    flow<NetworkResult<List<ArticleEntity>>> {
-//      emit(NetworkResult.Loading())
-//      val localArticles = localDataSource.getAllArticlesFlow().firstOrNull()
-//
-//      when (val remoteResult = remoteDataSource.getTopHeadlines().first()) {
-//        is NetworkResult.Failed -> {
-//          emit(NetworkResult.Success(localArticles ?: listOf()))
-//        }
-//
-//        is NetworkResult.Loading -> {
-////          emit(NetworkResult.Loading())
-//        }
-//
-//        is NetworkResult.Success -> {
-//          remoteResult.response?.articles?.let { safeArticles ->
-//            val articles = safeArticles.mapNotNull {
-//              it?.toEntity()
-//            }
-//            emit(NetworkResult.Success(articles))
-//            localDataSource.insertAllArticles(articles)
-//          }
-//        }
-//      }
-//    }.flowOn(ioDispatcher)
+  override fun getSources(): Flow<NetworkResult<List<SourceXEntity>>> = performNetworkCallAndSaveData(
+    {
+      localDataSource.getAllSources()
+    },
+    {
+      remoteDataSource.getNewsSources()
+    },
+    {
+      RemoteToLocalMapper.mapRemoteToLocal(it)
+    },
+    {
+      localDataSource.insertAllSources(it)
+    },
+    listOf(),
+    true
+  )
+
 
   private fun <A, L> performNetworkCallAndSaveData(
     fetchFromLocal: suspend () -> Flow<L>,

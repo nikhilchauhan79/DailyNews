@@ -1,5 +1,6 @@
 package com.example.dailynews.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.dailynews.data.db.entities.ArticleEntity
 import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.data.repository.NewsRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -23,6 +25,7 @@ class DailyNewsViewModel(
   private val _searchResults: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
 
   private val _searchQuery = mutableStateOf("")
+  private var searchJob: Job? = null
 
   val searchQuery: State<String> = _searchQuery
 
@@ -41,7 +44,9 @@ class DailyNewsViewModel(
   }
 
   private fun searchNews(searchQuery: String) {
-    viewModelScope.launch {
+    searchJob?.cancel()
+
+    searchJob = viewModelScope.launch {
       newsRepository.searchNews(searchQuery).collectLatest { networkResult ->
         when (networkResult) {
           is NetworkResult.Failed -> {
@@ -53,6 +58,7 @@ class DailyNewsViewModel(
           }
 
           is NetworkResult.Success -> {
+            Log.i(TAG, "searchNews: got response")
             _searchResults.value = networkResult.response ?: listOf()
           }
         }
@@ -71,5 +77,9 @@ class DailyNewsViewModel(
 
   fun setSearchResults(newList: List<ArticleEntity>) {
     _searchResults.value = newList
+  }
+
+  companion object {
+    const val TAG = "DailyNewsViewModel"
   }
 }

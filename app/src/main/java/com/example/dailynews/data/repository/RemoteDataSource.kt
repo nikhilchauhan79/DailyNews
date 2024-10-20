@@ -5,6 +5,7 @@ import com.example.dailynews.data.network.DailyNewsApi
 import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.data.network.model.ErrorResponse
 import com.example.dailynews.data.network.model.NewsResponse
+import com.example.dailynews.data.network.model.SourcesResponse
 import com.example.dailynews.utils.Constants
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
@@ -75,48 +76,11 @@ class RemoteDataSource(
     dailyNewsApi.searchNews(searchQuery, Constants.API_KEY)
   }
 
-//    flow<NetworkResult<NewsResponse?>> {
-//      try {
-//        val response = dailyNewsApi.getTopHeadlines("us", Constants.API_KEY)
-//        if (!response.isSuccessful) {
-//          response.errorBody()?.charStream()?.let { safeError ->
-//            val error = parseError(safeError)
-//            emit(
-//              NetworkResult.Failed(
-//                error?.message
-//                  ?: "Unknown error: with code: ${response.code()} , message :${response.message()}"
-//              )
-//            )
-//          } ?: run {
-//            emit(
-//              NetworkResult.Failed(
-//                "Unknown error: with code: ${response.code()} , message :${response.message()}"
-//              )
-//            )
-//          }
-//        } else {
-//          val newsResponse = response.body()
-//          if (newsResponse != null) {
-//            emit(NetworkResult.Success(newsResponse))
-//          } else {
-//            emit(
-//              NetworkResult.Failed(
-//                "Response body is null"
-//              )
-//            )
-//          }
-//        }
-//      } catch (e: Exception) {
-//        throw e
-//      }
-//
-//    }.catch {
-//      emit(
-//        NetworkResult.Failed(
-//          "Unable to fetch data with exception: ${it.message}"
-//        )
-//      )
-//    }.flowOn(ioDispatcher)
+  fun getNewsSources(): Flow<NetworkResult<SourcesResponse>> =
+    performNetworkRequest {
+      dailyNewsApi.getAllSources(Constants.API_KEY)
+    }
+
 
   companion object {
     const val TAG = "RemoteDataSource"

@@ -1,6 +1,7 @@
 package com.example.dailynews.data.network
 
 import com.example.dailynews.data.network.model.NewsResponse
+import com.example.dailynews.data.network.model.SourcesResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -18,5 +19,10 @@ interface DailyNewsApi {
   suspend fun searchNews(
     @Query("q") query: String,
     @Query("apiKey") apiKey: String,
-  ) : Response<NewsResponse>
+  ): Response<NewsResponse>
+
+  @GET("top-headlines/sources")
+  suspend fun getAllSources(
+    @Query("apiKey") apiKey: String,
+  ): Response<SourcesResponse>
 }
