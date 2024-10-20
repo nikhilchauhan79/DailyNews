@@ -64,6 +64,8 @@ class DailyNewsViewModel(
     _searchQuery.value = newQuery
     if (newQuery.isNotBlank()) {
       searchNews(newQuery)
+    } else {
+      _searchResults.value = listOf()
     }
   }
 
