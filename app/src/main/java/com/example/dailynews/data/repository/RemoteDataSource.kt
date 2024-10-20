@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.IOException
+import java.io.Reader
 
 class RemoteDataSource(
   private val dailyNewsApi: DailyNewsApi,
@@ -24,7 +25,7 @@ class RemoteDataSource(
         val response = dailyNewsApi.getTopHeadlines("us", Constants.API_KEY)
         if (!response.isSuccessful) {
           response.errorBody()?.charStream()?.let { safeError ->
-            val error = parseError(safeError.toString())
+            val error = parseError(safeError)
             emit(
               NetworkResult.Failed(
                 error?.message
@@ -63,10 +64,9 @@ class RemoteDataSource(
     }.flowOn(ioDispatcher)
 
   companion object {
-    fun parseError(response: String): ErrorResponse? {
-      val gson = Gson()  // You can use the same Gson instance Retrofit uses
+    fun parseError(response: Reader): ErrorResponse? {
+      val gson = Gson()
       return try {
-        // Convert the error body using the Gson converter
         gson.fromJson(response, ErrorResponse::class.java)
       } catch (e: IOException) {
         e.printStackTrace()

@@ -105,4 +105,17 @@ dependencies {
   implementation(libs.androidx.lifecycle.process)
 
   implementation(libs.lifecycle.livedata.ktx)
+
+  // Jetpack Compose integration
+  implementation(libs.androidx.navigation.compose)
+
+  // Views/Fragments integration
+  implementation(libs.androidx.navigation.fragment.ktx)
+  implementation(libs.androidx.navigation.ui)
+
+  // Feature module support for Fragments
+  implementation(libs.androidx.navigation.dynamic.features.fragment)
+
+  // Testing Navigation
+  androidTestImplementation(libs.androidx.navigation.testing)
 }
