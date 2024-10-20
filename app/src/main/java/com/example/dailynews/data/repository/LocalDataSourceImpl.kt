@@ -37,7 +37,7 @@ class LocalDataSourceImpl(
         ae.sourceEntity?.let { safeAe -> sources.add(safeAe) }
       }
       if (articleEntities.isNotEmpty() && sources.isNotEmpty()) {
-        deleteAllArticles()
+//        deleteAllArticles()
       }
       articleDao.insertArticles(articleEntities)
       sourceDao.insertSources(sources)

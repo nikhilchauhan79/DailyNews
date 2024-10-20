@@ -13,4 +13,10 @@ interface DailyNewsApi {
     @Query("pageSize") pageSize: Int = 100,
     @Query("page") page: Int = 1
   ): Response<NewsResponse>
+
+  @GET("everything")
+  suspend fun searchNews(
+    @Query("q") query: String,
+    @Query("apiKey") apiKey: String,
+  ) : Response<NewsResponse>
 }

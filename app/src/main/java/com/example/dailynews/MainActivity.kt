@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.dailynews.data.db.DailyNewsDatabase
 import com.example.dailynews.data.network.DailyNewsService
-import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.data.repository.LocalDataSourceImpl
 import com.example.dailynews.data.repository.NewsRepositoryImpl
 import com.example.dailynews.data.repository.RemoteDataSource
@@ -53,7 +51,6 @@ class MainActivity : ComponentActivity() {
     )[DailyNewsViewModel::class]
 
     setContent {
-      val articles = newsViewModel.topHeadlinesStateFlow.collectAsState(NetworkResult.Loading())
       val navController = rememberNavController()
 
       DailyNewsTheme {
@@ -68,7 +65,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
           ) {
-            MyNavigationHost(navHostController = navController, articles = articles.value)
+            MyNavigationHost(navHostController = navController, newsViewModel = newsViewModel)
           }
         }
       }
