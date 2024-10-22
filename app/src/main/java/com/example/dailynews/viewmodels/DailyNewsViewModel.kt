@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dailynews.data.db.entities.ArticleEntity
+import com.example.dailynews.data.db.entities.SourceXEntity
 import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.data.repository.NewsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -28,11 +30,16 @@ class DailyNewsViewModel(
   private var searchJob: Job? = null
 
   val searchQuery: State<String> = _searchQuery
-
   val searchResult: StateFlow<List<ArticleEntity>> = _searchResults
+
+  private val _sourcesMutableStateFlow: MutableStateFlow<List<SourceXEntity>> =
+    MutableStateFlow(listOf())
+
+  val sourcesStateFlow = _sourcesMutableStateFlow.asStateFlow()
 
   init {
     getAllTopHeadlines()
+    getAllSources()
   }
 
   private fun getAllTopHeadlines() {
@@ -72,6 +79,26 @@ class DailyNewsViewModel(
       searchNews(newQuery)
     } else {
       _searchResults.value = listOf()
+    }
+  }
+
+  fun getAllSources() {
+    viewModelScope.launch {
+      newsRepository.getSources().collect { networkResult ->
+        when (networkResult) {
+          is NetworkResult.Failed -> {
+
+          }
+
+          is NetworkResult.Loading -> {
+
+          }
+
+          is NetworkResult.Success -> {
+            _sourcesMutableStateFlow.value = networkResult.response ?: listOf()
+          }
+        }
+      }
     }
   }
 

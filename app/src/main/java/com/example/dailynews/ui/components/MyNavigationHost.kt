@@ -21,6 +21,7 @@ fun MyNavigationHost(
 ) {
   val articles = newsViewModel.topHeadlinesStateFlow.collectAsState(NetworkResult.Loading())
   val searchResults = newsViewModel.searchResult.collectAsStateWithLifecycle()
+  val sourcesResults = newsViewModel.sourcesStateFlow.collectAsStateWithLifecycle()
 
   NavHost(navHostController, startDestination = BottomNavItem.Home.route) {
     composable(BottomNavItem.Home.route) {
@@ -37,7 +38,7 @@ fun MyNavigationHost(
     }
 
     composable(BottomNavItem.Sources.route) {
-      SourcesScreen(modifier)
+      SourcesScreen(modifier, sourcesResults.value)
     }
   }
 }
