@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,12 +28,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.dailynews.R
 import com.example.dailynews.data.db.entities.ArticleEntity
-import com.example.dailynews.data.network.NetworkResult
-import com.example.dailynews.ui.components.MyCircularIndicator
+import com.example.dailynews.ui.components.MyAlertDialog
 import com.example.dailynews.utils.Utils
 
 @Composable
-fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>,
+fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>, bookmarkDialogState: Boolean,
+                    dialogCallback: (Boolean, ArticleEntity) -> Unit,
+                    showDialogListener: (Boolean) -> Unit,
                     onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
                     ) {
   LazyColumn(
@@ -45,7 +43,9 @@ fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>
     modifier = modifier.fillMaxSize()
   ) {
     items(articles) { article ->
-      NewsItem(article = article, onArticleBookmarkChange = onArticleBookmarkChange)
+      NewsItem(article = article, onArticleBookmarkChange = onArticleBookmarkChange,
+        bookmarkDialogState = bookmarkDialogState, dialogCallback = dialogCallback, showDialogListener = showDialogListener
+      )
     }
   }
 }
@@ -53,8 +53,16 @@ fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>
 
 @Composable
 fun NewsItem(modifier: Modifier = Modifier, article: ArticleEntity,
-             onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
+             onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit,
+             bookmarkDialogState: Boolean,
+             showDialogListener: (Boolean) -> Unit,
+             dialogCallback: (Boolean, ArticleEntity) -> Unit,
              ) {
+
+  if (bookmarkDialogState) {
+    MyAlertDialog(Modifier, bookmarkDialogState, dialogCallback, article, showDialogListener)
+  }
+
   OutlinedCard(
     modifier = modifier.fillMaxWidth(),
     shape = RoundedCornerShape(8.dp),
@@ -100,9 +108,9 @@ fun NewsItem(modifier: Modifier = Modifier, article: ArticleEntity,
 
         IconButton(
           onClick = {
-            val addOrRemove: Int = if (article.isBookmarked == 0) 1 else 0
-            article.isBookmarked = addOrRemove
-            onArticleBookmarkChange.invoke(article, addOrRemove)
+            if (article.isBookmarked == 1) {
+              showDialogListener.invoke(true)
+            }
           }
         ) {
           Icon(

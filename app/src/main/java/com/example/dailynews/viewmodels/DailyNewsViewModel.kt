@@ -27,6 +27,8 @@ class DailyNewsViewModel(
   private val _searchResults: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
   private val _favouriteArticles: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
 
+  val bookmarkDialogState = mutableStateOf(false)
+
   val favouriteArticles = _favouriteArticles.asStateFlow()
 
   private val _searchQuery = mutableStateOf("")

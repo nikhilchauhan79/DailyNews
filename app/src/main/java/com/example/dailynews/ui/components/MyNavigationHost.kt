@@ -48,7 +48,19 @@ fun MyNavigationHost(
     }
 
     composable(BottomNavItem.Bookmark.route) {
-      FavouriteScreen(modifier, favouriteResults.value) { articleEntity, addOrRemove ->
+      FavouriteScreen(
+        modifier,
+        favouriteResults.value,
+        newsViewModel.bookmarkDialogState.value,
+        { confirmPressed, article ->
+          if (confirmPressed) {
+            article.isBookmarked = 0
+            newsViewModel.bookmarkArticle(article, 0)
+          }
+          newsViewModel.bookmarkDialogState.value = false
+        },{
+          newsViewModel.bookmarkDialogState.value = it
+        }) { articleEntity, addOrRemove ->
         newsViewModel.bookmarkArticle(articleEntity, addOrRemove)
       }
     }
