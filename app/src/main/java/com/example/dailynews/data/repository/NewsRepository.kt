@@ -10,4 +10,7 @@ interface NewsRepository {
   fun getTopHeadlines(): Flow<NetworkResult<List<ArticleEntity>>>
   fun searchNews(query: String): Flow<NetworkResult<List<ArticleEntity>>>
   fun getSources(): Flow<NetworkResult<List<SourceXEntity>>>
+  fun getBookmarkedArticles(): Flow<List<ArticleEntity>>
+//  suspend fun bookmarkArticle(articleEntity: ArticleEntity)
+  suspend fun bookmarkArticle(articleEntity: ArticleEntity, addOrRemove: Int)
 }

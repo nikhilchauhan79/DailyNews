@@ -4,11 +4,12 @@ package com.example.dailynews.data.db.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity
 data class SourceXEntity(
-  @PrimaryKey(autoGenerate = true)
-  val uid: Int,
+  @PrimaryKey
+  val uid: String,
   @ColumnInfo(name = "category")
   val category: String?,
   @ColumnInfo(name = "country")

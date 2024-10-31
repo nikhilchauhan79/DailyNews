@@ -3,6 +3,7 @@ package com.example.dailynews.data.network.model
 
 import com.example.dailynews.data.db.entities.ArticleEntity
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 data class Article(
   @SerializedName("author")
@@ -25,9 +26,9 @@ data class Article(
 
 fun Article.toEntity(): ArticleEntity {
   val ae = ArticleEntity(
-    0, author, content, description, publishedAt, title, url, urlToImage
+    UUID.randomUUID().toString(), author, content, description, publishedAt, title, url, urlToImage
   )
 
-  ae.sourceEntity = source?.toEntity(0)
+  ae.sourceEntity = source?.toEntity(ae.articleID)
   return ae
 }

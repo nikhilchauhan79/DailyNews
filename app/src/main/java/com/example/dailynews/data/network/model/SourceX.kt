@@ -4,6 +4,7 @@ package com.example.dailynews.data.network.model
 import com.example.dailynews.data.db.entities.SourceEntity
 import com.example.dailynews.data.db.entities.SourceXEntity
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 data class SourceX(
   @SerializedName("category")
@@ -23,5 +24,5 @@ data class SourceX(
 )
 
 fun SourceX.toEntity(): SourceXEntity {
-  return SourceXEntity(0, category, country, description, id, language, name, url)
+  return SourceXEntity(UUID.randomUUID().toString(), category, country, description, id, language, name, url)
 }

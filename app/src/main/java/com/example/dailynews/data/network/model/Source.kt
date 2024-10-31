@@ -3,6 +3,7 @@ package com.example.dailynews.data.network.model
 
 import com.example.dailynews.data.db.entities.SourceEntity
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 
 data class Source(
@@ -12,4 +13,4 @@ data class Source(
   val name: String?
 )
 
-fun Source.toEntity(articleID: Int) = SourceEntity(0, articleID, id, name)
+fun Source.toEntity(articleID: String) = SourceEntity(UUID.randomUUID().toString(),id, articleID, id, name)

@@ -25,6 +25,9 @@ class DailyNewsViewModel(
     _topHeadlinesMutableStateFlow
 
   private val _searchResults: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
+  private val _favouriteArticles: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
+
+  val favouriteArticles = _favouriteArticles.asStateFlow()
 
   private val _searchQuery = mutableStateOf("")
   private var searchJob: Job? = null
@@ -40,6 +43,7 @@ class DailyNewsViewModel(
   init {
     getAllTopHeadlines()
     getAllSources()
+    getFavouriteArticles()
   }
 
   private fun getAllTopHeadlines() {
@@ -99,6 +103,20 @@ class DailyNewsViewModel(
           }
         }
       }
+    }
+  }
+
+  private fun getFavouriteArticles() {
+    viewModelScope.launch {
+      newsRepository.getBookmarkedArticles().collect { list ->
+        _favouriteArticles.value = list
+      }
+    }
+  }
+
+  fun bookmarkArticle(articleEntity: ArticleEntity, addOrRemove: Int) {
+    viewModelScope.launch {
+      newsRepository.bookmarkArticle(articleEntity, addOrRemove)
     }
   }
 

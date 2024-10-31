@@ -5,11 +5,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity
 data class ArticleEntity(
-  @PrimaryKey(autoGenerate = true)
-  val articleID: Int,
+  @PrimaryKey
+  val articleID: String,
   @ColumnInfo("author")
   val author: String?,
   @ColumnInfo("content")
@@ -23,7 +24,9 @@ data class ArticleEntity(
   @ColumnInfo("url")
   val url: String?,
   @ColumnInfo("urlToImage")
-  val urlToImage: String?
+  val urlToImage: String?,
+  @ColumnInfo("isBookmarked")
+  var isBookmarked: Int = 0
 ) {
   @Ignore
   var sourceEntity: SourceEntity? = null

@@ -1,6 +1,5 @@
-package com.example.dailynews.ui.home
+package com.example.dailynews.ui.favourite
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +12,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,44 +36,9 @@ import com.example.dailynews.ui.components.MyCircularIndicator
 import com.example.dailynews.utils.Utils
 
 @Composable
-fun HandleArticles(
-  value: NetworkResult<List<ArticleEntity>>?,
-  modifier: Modifier,
-  onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
-) {
-  when (value) {
-    is NetworkResult.Failed -> {
-      Text(value.message ?: "Unknown Error", style = MaterialTheme.typography.headlineMedium)
-    }
-
-    is NetworkResult.Loading -> {
-      MyCircularIndicator(modifier)
-    }
-
-    is NetworkResult.Success -> {
-      HomeScreen(
-        modifier = modifier,
-        articles = value.response ?: listOf(),
-        onArticleBookmarkChange
-      )
-    }
-
-    null -> {
-      HomeScreen(
-        modifier = Modifier,
-        articles = listOf(),
-        onArticleBookmarkChange = onArticleBookmarkChange
-      )
-    }
-  }
-}
-
-@Composable
-fun HomeScreen(
-  modifier: Modifier = Modifier,
-  articles: List<ArticleEntity>,
-  onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
-) {
+fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>,
+                    onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
+                    ) {
   LazyColumn(
     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -86,10 +52,9 @@ fun HomeScreen(
 
 
 @Composable
-fun NewsItem(
-  modifier: Modifier = Modifier, article: ArticleEntity,
-  onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
-) {
+fun NewsItem(modifier: Modifier = Modifier, article: ArticleEntity,
+             onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
+             ) {
   OutlinedCard(
     modifier = modifier.fillMaxWidth(),
     shape = RoundedCornerShape(8.dp),
@@ -134,23 +99,15 @@ fun NewsItem(
         )
 
         IconButton(
-          modifier = Modifier
-            .size(32.dp)
-            .clickable {
-            },
           onClick = {
             val addOrRemove: Int = if (article.isBookmarked == 0) 1 else 0
             article.isBookmarked = addOrRemove
             onArticleBookmarkChange.invoke(article, addOrRemove)
           }
         ) {
-          if(article.isBookmarked == 1)
-            Icon(
-              ImageVector.vectorResource(R.drawable.bookmark_filled),
-              contentDescription = null
-            )
-            else Icon(
-            ImageVector.vectorResource(R.drawable.baseline_bookmark_border_24),
+          Icon(
+            imageVector = ImageVector.vectorResource(if (article.isBookmarked == 1) R.drawable.bookmark_filled else R.drawable.baseline_bookmark_border_24),
+            modifier = Modifier.size(32.dp),
             contentDescription = null
           )
         }

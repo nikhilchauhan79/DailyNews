@@ -35,7 +35,8 @@ fun SearchScreen(
   modifier: Modifier = Modifier,
   searchQuery: String,
   onSearchQueryChange: (String) -> Unit,
-  searchResults: List<ArticleEntity>
+  searchResults: List<ArticleEntity>,
+  onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
 ) {
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -70,7 +71,9 @@ fun SearchScreen(
         modifier = modifier.fillMaxSize()
       ) {
         items(searchResults) { article ->
-          NewsItem(article = article)
+          NewsItem(
+            article = article, onArticleBookmarkChange = onArticleBookmarkChange
+          )
         }
       }
 //      Text("Work in progress", style = MaterialTheme.typography.headlineMedium)

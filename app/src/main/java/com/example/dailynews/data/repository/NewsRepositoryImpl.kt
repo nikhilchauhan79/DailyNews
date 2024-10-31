@@ -5,11 +5,15 @@ import com.example.dailynews.data.db.entities.SourceXEntity
 import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.utils.RemoteToLocalMapper
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class NewsRepositoryImpl(
   private val localDataSource: LocalDataSource,
@@ -53,23 +57,38 @@ class NewsRepositoryImpl(
       false
     )
 
-  override fun getSources(): Flow<NetworkResult<List<SourceXEntity>>> = performNetworkCallAndSaveData(
-    {
-      localDataSource.getAllSources()
-    },
-    {
-      remoteDataSource.getNewsSources()
-    },
-    {
-      RemoteToLocalMapper.mapRemoteToLocal(it)
-    },
-    {
-      localDataSource.insertAllSources(it)
-    },
-    listOf(),
-    true
-  )
+  override fun getSources(): Flow<NetworkResult<List<SourceXEntity>>> =
+    performNetworkCallAndSaveData(
+      {
+        localDataSource.getAllSources()
+      },
+      {
+        remoteDataSource.getNewsSources()
+      },
+      {
+        RemoteToLocalMapper.mapRemoteToLocal(it)
+      },
+      {
+        localDataSource.insertAllSources(it)
+      },
+      listOf(),
+      true
+    )
 
+  override fun getBookmarkedArticles(): Flow<List<ArticleEntity>> =
+    localDataSource.getAllBookmarkedArticles().map { article ->
+      article.map { ae ->
+        withContext(Dispatchers.IO) {
+          ae.sourceEntity = localDataSource.getSourcesByArticleID(ae.articleID)
+          ae
+        }
+      }
+    }.flowOn(Dispatchers.IO)
+
+
+  override suspend fun bookmarkArticle(articleEntity: ArticleEntity, addOrRemove: Int) {
+    localDataSource.bookmarkArticle(articleEntity, addOrRemove)
+  }
 
   private fun <A, L> performNetworkCallAndSaveData(
     fetchFromLocal: suspend () -> Flow<L>,
@@ -78,7 +97,7 @@ class NewsRepositoryImpl(
     saveToDatabase: suspend (L) -> Unit,
     defaultValue: L,
     shouldFetchFromLocal: Boolean
-  ): Flow<NetworkResult<L>> = flow<NetworkResult<L>> {
+  ): Flow<NetworkResult<L>> = flow {
     emit(NetworkResult.Loading())
 
     val localArticles = fetchFromLocal.invoke().firstOrNull()
@@ -100,7 +119,9 @@ class NewsRepositoryImpl(
         remoteResult.response?.let {
           val mapped = mapToLocal(it)
           saveToDatabase(mapped)
-          emit(NetworkResult.Success(mapped))
+          emitAll(fetchFromLocal.invoke().map {
+            NetworkResult.Success(it)
+          })
         }
       }
     }

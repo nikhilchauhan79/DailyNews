@@ -4,12 +4,14 @@ package com.example.dailynews.data.db.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity
 data class SourceEntity(
-  @PrimaryKey(autoGenerate = true)
-  val sourceID: Int,
-  val articleID: Int,
+  @PrimaryKey
+  val uid: String,
+  val sourceID: String?,
+  val articleID: String,
   @ColumnInfo("id")
   val id: String?,
   @ColumnInfo("name")
