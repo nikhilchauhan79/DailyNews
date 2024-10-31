@@ -58,11 +58,9 @@ fun MyNavigationHost(
             newsViewModel.bookmarkArticle(article, 0)
           }
           newsViewModel.bookmarkDialogState.value = false
-        },{
+        }, {
           newsViewModel.bookmarkDialogState.value = it
-        }) { articleEntity, addOrRemove ->
-        newsViewModel.bookmarkArticle(articleEntity, addOrRemove)
-      }
+        })
     }
   }
 }

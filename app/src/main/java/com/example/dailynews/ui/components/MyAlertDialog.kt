@@ -11,7 +11,6 @@ import com.example.dailynews.data.db.entities.ArticleEntity
 @Composable
 fun MyAlertDialog(
   modifier: Modifier = Modifier,
-  openDialog: Boolean,
   dialogCallback: (Boolean, ArticleEntity) -> Unit,
   article: ArticleEntity,
   showDialogListener: (Boolean) -> Unit

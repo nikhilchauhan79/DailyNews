@@ -32,19 +32,20 @@ import com.example.dailynews.ui.components.MyAlertDialog
 import com.example.dailynews.utils.Utils
 
 @Composable
-fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>, bookmarkDialogState: Boolean,
-                    dialogCallback: (Boolean, ArticleEntity) -> Unit,
-                    showDialogListener: (Boolean) -> Unit,
-                    onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit
-                    ) {
+fun FavouriteScreen(
+  modifier: Modifier = Modifier, articles: List<ArticleEntity>, bookmarkDialogState: Boolean,
+  dialogCallback: (Boolean, ArticleEntity) -> Unit,
+  showDialogListener: (Boolean) -> Unit
+) {
   LazyColumn(
     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
     modifier = modifier.fillMaxSize()
   ) {
     items(articles) { article ->
-      NewsItem(article = article, onArticleBookmarkChange = onArticleBookmarkChange,
-        bookmarkDialogState = bookmarkDialogState, dialogCallback = dialogCallback, showDialogListener = showDialogListener
+      NewsItem(
+        article = article, bookmarkDialogState = bookmarkDialogState,
+        showDialogListener = showDialogListener, dialogCallback = dialogCallback
       )
     }
   }
@@ -52,15 +53,15 @@ fun FavouriteScreen(modifier: Modifier = Modifier, articles: List<ArticleEntity>
 
 
 @Composable
-fun NewsItem(modifier: Modifier = Modifier, article: ArticleEntity,
-             onArticleBookmarkChange: (articleEntity: ArticleEntity, addOrRemove: Int) -> Unit,
-             bookmarkDialogState: Boolean,
-             showDialogListener: (Boolean) -> Unit,
-             dialogCallback: (Boolean, ArticleEntity) -> Unit,
+fun NewsItem(
+  modifier: Modifier = Modifier, article: ArticleEntity,
+  bookmarkDialogState: Boolean,
+  showDialogListener: (Boolean) -> Unit,
+  dialogCallback: (Boolean, ArticleEntity) -> Unit,
              ) {
 
   if (bookmarkDialogState) {
-    MyAlertDialog(Modifier, bookmarkDialogState, dialogCallback, article, showDialogListener)
+    MyAlertDialog(Modifier, dialogCallback, article, showDialogListener)
   }
 
   OutlinedCard(
