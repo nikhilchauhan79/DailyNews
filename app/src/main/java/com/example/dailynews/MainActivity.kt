@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.dailynews.data.db.DailyNewsDatabase
 import com.example.dailynews.data.network.DailyNewsService
+import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.data.repository.LocalDataSourceImpl
 import com.example.dailynews.data.repository.NewsRepositoryImpl
 import com.example.dailynews.data.repository.RemoteDataSource
@@ -78,6 +79,13 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  companion object {
+    val newsCategories = listOf(
+      NewsCategory.General, NewsCategory.Business, NewsCategory.Health,
+      NewsCategory.Science, NewsCategory.Sports, NewsCategory.Technology, NewsCategory.Entertainment
+    )
   }
 }
 

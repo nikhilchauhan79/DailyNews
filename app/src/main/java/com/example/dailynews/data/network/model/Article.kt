@@ -2,6 +2,7 @@ package com.example.dailynews.data.network.model
 
 
 import com.example.dailynews.data.db.entities.ArticleEntity
+import com.example.dailynews.data.network.enums.NewsCategory
 import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
@@ -24,9 +25,17 @@ data class Article(
   val urlToImage: String?
 )
 
-fun Article.toEntity(): ArticleEntity {
+fun Article.toEntity(category: NewsCategory): ArticleEntity {
   val ae = ArticleEntity(
-    UUID.randomUUID().toString(), author, content, description, publishedAt, title, url, urlToImage
+    UUID.randomUUID().toString(),
+    author,
+    content,
+    category.category,
+    description,
+    publishedAt,
+    title,
+    url,
+    urlToImage
   )
 
   ae.sourceEntity = source?.toEntity(ae.articleID)

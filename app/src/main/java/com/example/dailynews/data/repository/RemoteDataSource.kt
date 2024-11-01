@@ -3,6 +3,7 @@ package com.example.dailynews.data.repository
 import android.util.Log
 import com.example.dailynews.data.network.DailyNewsApi
 import com.example.dailynews.data.network.NetworkResult
+import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.data.network.model.ErrorResponse
 import com.example.dailynews.data.network.model.NewsResponse
 import com.example.dailynews.data.network.model.SourcesResponse
@@ -71,6 +72,11 @@ class RemoteDataSource(
   fun getTopHeadlines(): Flow<NetworkResult<NewsResponse>> = performNetworkRequest {
     dailyNewsApi.getTopHeadlines("us", Constants.API_KEY)
   }
+
+  fun getNewsForCategory(category: NewsCategory): Flow<NetworkResult<NewsResponse>> =
+    performNetworkRequest {
+      dailyNewsApi.getNewsForCategory("us", Constants.API_KEY, category = category.category)
+    }
 
   fun searchNews(searchQuery: String): Flow<NetworkResult<NewsResponse>> = performNetworkRequest {
     dailyNewsApi.searchNews(searchQuery, Constants.API_KEY)

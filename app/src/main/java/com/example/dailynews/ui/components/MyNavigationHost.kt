@@ -1,6 +1,7 @@
 package com.example.dailynews.ui.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -8,6 +9,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.dailynews.data.network.NetworkResult
+import com.example.dailynews.data.network.enums.NewsCategory
+import com.example.dailynews.ui.category.ShowNewsForCategory
 import com.example.dailynews.ui.favourite.FavouriteScreen
 import com.example.dailynews.ui.home.HandleArticles
 import com.example.dailynews.ui.search.SearchScreen
@@ -24,6 +27,11 @@ fun MyNavigationHost(
   val searchResults = newsViewModel.searchResult.collectAsStateWithLifecycle()
   val sourcesResults = newsViewModel.sourcesStateFlow.collectAsStateWithLifecycle()
   val favouriteResults = newsViewModel.favouriteArticles.collectAsStateWithLifecycle()
+  val newsForCategoryResults = newsViewModel.articlesForCategoryStateFlow.collectAsStateWithLifecycle()
+
+  LaunchedEffect(Unit) {
+    newsViewModel.getArticlesForCategory(NewsCategory.General)
+  }
 
   NavHost(navHostController, startDestination = BottomNavItem.Home.route) {
     composable(BottomNavItem.Home.route) {
@@ -45,6 +53,13 @@ fun MyNavigationHost(
 
     composable(BottomNavItem.Sources.route) {
       SourcesScreen(modifier, sourcesResults.value)
+    }
+
+    composable(BottomNavItem.Category.route) {
+      ShowNewsForCategory(modifier, newsViewModel.selectedTab.intValue, newsViewModel::changeSelectedTab,
+        newsForCategoryResults.value) { articleEntity, addOrRemove ->
+        newsViewModel.bookmarkArticle(articleEntity, addOrRemove)
+      }
     }
 
     composable(BottomNavItem.Bookmark.route) {

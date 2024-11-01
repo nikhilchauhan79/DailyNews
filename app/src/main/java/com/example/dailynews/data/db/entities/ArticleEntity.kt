@@ -15,6 +15,8 @@ data class ArticleEntity(
   val author: String?,
   @ColumnInfo("content")
   val content: String?,
+  @ColumnInfo("category")
+  val category: String?,
   @ColumnInfo("description")
   val description: String?,
   @ColumnInfo("publishedAt")

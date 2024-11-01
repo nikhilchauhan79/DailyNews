@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
-val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Search, BottomNavItem.Sources,
+val bottomNavItems = listOf(BottomNavItem.Home, BottomNavItem.Search, BottomNavItem.Category,BottomNavItem.Sources,
   BottomNavItem.Bookmark)
 
 @Composable

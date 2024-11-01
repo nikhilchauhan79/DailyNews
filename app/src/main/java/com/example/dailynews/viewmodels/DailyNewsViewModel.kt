@@ -1,13 +1,17 @@
 package com.example.dailynews.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dailynews.MainActivity
 import com.example.dailynews.data.db.entities.ArticleEntity
 import com.example.dailynews.data.db.entities.SourceXEntity
 import com.example.dailynews.data.network.NetworkResult
+import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.data.repository.NewsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,10 +28,19 @@ class DailyNewsViewModel(
   val topHeadlinesStateFlow: StateFlow<NetworkResult<List<ArticleEntity>>?> =
     _topHeadlinesMutableStateFlow
 
+  private val _articlesForCategoryMutableStateFlow: MutableStateFlow<NetworkResult<List<ArticleEntity>>?> =
+    MutableStateFlow(null)
+
+  val articlesForCategoryStateFlow: StateFlow<NetworkResult<List<ArticleEntity>>?> =
+    _articlesForCategoryMutableStateFlow
+
   private val _searchResults: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
   private val _favouriteArticles: MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
 
   val bookmarkDialogState = mutableStateOf(false)
+  val selectedTab = mutableIntStateOf(0)
+
+  val newsCategoryState: MutableState<NewsCategory> = mutableStateOf(NewsCategory.General)
 
   val favouriteArticles = _favouriteArticles.asStateFlow()
 
@@ -54,6 +67,24 @@ class DailyNewsViewModel(
         _topHeadlinesMutableStateFlow.value = result
       }
     }
+  }
+
+  fun getArticlesForCategory(category: NewsCategory) {
+    viewModelScope.launch {
+      newsRepository.getNewsForCategory(category).collect { result ->
+        _articlesForCategoryMutableStateFlow.value = result
+      }
+    }
+  }
+
+  fun changeSelectedTab(newIndex: Int) {
+    selectedTab.intValue = newIndex
+    val category = MainActivity.newsCategories.find {
+      it.index == newIndex
+    } ?: NewsCategory.General
+
+//    newsCategoryState.value = category
+    getArticlesForCategory(category = category)
   }
 
   private fun searchNews(searchQuery: String) {

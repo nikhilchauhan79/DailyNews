@@ -3,6 +3,7 @@ package com.example.dailynews.data.repository
 import com.example.dailynews.data.db.entities.ArticleEntity
 import com.example.dailynews.data.db.entities.SourceXEntity
 import com.example.dailynews.data.network.NetworkResult
+import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.utils.RemoteToLocalMapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +39,25 @@ class NewsRepositoryImpl(
       listOf(),
       true
     )
+
+  override fun getNewsForCategory(category: NewsCategory): Flow<NetworkResult<List<ArticleEntity>>> =
+    performNetworkCallAndSaveData(
+      {
+        localDataSource.getArticlesForCategory(category)
+      },
+      {
+        remoteDataSource.getNewsForCategory(category)
+      },
+      {
+        RemoteToLocalMapper.mapRemoteToLocal(it, category)
+      },
+      {
+        localDataSource.insertAllArticles(it)
+      },
+      listOf(),
+      false
+    )
+
 
   override fun searchNews(query: String): Flow<NetworkResult<List<ArticleEntity>>> =
     performNetworkCallAndSaveData(
@@ -119,9 +139,7 @@ class NewsRepositoryImpl(
         remoteResult.response?.let {
           val mapped = mapToLocal(it)
           saveToDatabase(mapped)
-          emitAll(fetchFromLocal.invoke().map {
-            NetworkResult.Success(it)
-          })
+          emit(NetworkResult.Success(mapped))
         }
       }
     }

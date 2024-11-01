@@ -7,6 +7,7 @@ import com.example.dailynews.data.db.dao.SourceXDao
 import com.example.dailynews.data.db.entities.ArticleEntity
 import com.example.dailynews.data.db.entities.SourceEntity
 import com.example.dailynews.data.db.entities.SourceXEntity
+import com.example.dailynews.data.network.enums.NewsCategory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,10 @@ class LocalDataSourceImpl(
 
   override fun getAllArticlesFlow(): Flow<List<ArticleEntity>> {
     return articleDao.getAllArticlesFlow()
+  }
+
+  override fun getArticlesForCategory(category: NewsCategory): Flow<List<ArticleEntity>> {
+    return articleDao.getArticlesForCategory(category.category)
   }
 
   override fun getAllSources(): Flow<List<SourceXEntity>> {

@@ -15,6 +15,15 @@ interface DailyNewsApi {
     @Query("page") page: Int = 1
   ): Response<NewsResponse>
 
+  @GET("top-headlines")
+  suspend fun getNewsForCategory(
+    @Query("country") country: String,
+    @Query("apiKey") apiKey: String,
+    @Query("pageSize") pageSize: Int = 100,
+    @Query("page") page: Int = 1,
+    @Query("category") category: String,
+  ): Response<NewsResponse>
+
   @GET("everything")
   suspend fun searchNews(
     @Query("q") query: String,
