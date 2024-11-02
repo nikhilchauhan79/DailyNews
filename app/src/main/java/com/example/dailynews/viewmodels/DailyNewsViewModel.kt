@@ -28,6 +28,9 @@ class DailyNewsViewModel(
   val topHeadlinesStateFlow: StateFlow<NetworkResult<List<ArticleEntity>>?> =
     _topHeadlinesMutableStateFlow
 
+  private val _allArticlesMutableStateFlow : MutableStateFlow<List<ArticleEntity>> = MutableStateFlow(listOf())
+  val allArticlesStateFlow : StateFlow<List<ArticleEntity>> = _allArticlesMutableStateFlow
+
   private val _articlesForCategoryMutableStateFlow: MutableStateFlow<NetworkResult<List<ArticleEntity>>?> =
     MutableStateFlow(null)
 
@@ -57,6 +60,7 @@ class DailyNewsViewModel(
 
   init {
     getAllTopHeadlines()
+    getTopHeadlinesFromDB()
     getAllSources()
     getFavouriteArticles()
   }
@@ -65,6 +69,14 @@ class DailyNewsViewModel(
     viewModelScope.launch {
       newsRepository.getTopHeadlines().collect { result ->
         _topHeadlinesMutableStateFlow.value = result
+      }
+    }
+  }
+
+  private fun getTopHeadlinesFromDB() {
+    viewModelScope.launch {
+      newsRepository.getAllArticlesFromDB().collect {
+        _allArticlesMutableStateFlow.value = it
       }
     }
   }

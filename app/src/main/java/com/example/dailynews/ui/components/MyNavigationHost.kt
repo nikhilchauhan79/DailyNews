@@ -13,6 +13,7 @@ import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.ui.category.ShowNewsForCategory
 import com.example.dailynews.ui.favourite.FavouriteScreen
 import com.example.dailynews.ui.home.HandleArticles
+import com.example.dailynews.ui.home.HomeScreen
 import com.example.dailynews.ui.search.SearchScreen
 import com.example.dailynews.ui.sources.SourcesScreen
 import com.example.dailynews.viewmodels.DailyNewsViewModel
@@ -23,7 +24,8 @@ fun MyNavigationHost(
   navHostController: NavHostController,
   newsViewModel: DailyNewsViewModel
 ) {
-  val articles = newsViewModel.topHeadlinesStateFlow.collectAsState(NetworkResult.Loading())
+  val articles = newsViewModel.topHeadlinesStateFlow.collectAsStateWithLifecycle()
+  val allArticlesFromDB = newsViewModel.allArticlesStateFlow.collectAsStateWithLifecycle()
   val searchResults = newsViewModel.searchResult.collectAsStateWithLifecycle()
   val sourcesResults = newsViewModel.sourcesStateFlow.collectAsStateWithLifecycle()
   val favouriteResults = newsViewModel.favouriteArticles.collectAsStateWithLifecycle()
@@ -35,7 +37,10 @@ fun MyNavigationHost(
 
   NavHost(navHostController, startDestination = BottomNavItem.Home.route) {
     composable(BottomNavItem.Home.route) {
-      HandleArticles(articles.value, modifier) { articleEntity, addOrRemove ->
+//      HandleArticles(articles.value, modifier) { articleEntity, addOrRemove ->
+//        newsViewModel.bookmarkArticle(articleEntity, addOrRemove)
+//      }
+      HomeScreen(modifier, allArticlesFromDB.value) { articleEntity, addOrRemove ->
         newsViewModel.bookmarkArticle(articleEntity, addOrRemove)
       }
     }

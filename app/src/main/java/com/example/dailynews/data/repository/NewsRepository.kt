@@ -15,4 +15,5 @@ interface NewsRepository {
   fun getBookmarkedArticles(): Flow<List<ArticleEntity>>
 //  suspend fun bookmarkArticle(articleEntity: ArticleEntity)
   suspend fun bookmarkArticle(articleEntity: ArticleEntity, addOrRemove: Int)
+  fun getAllArticlesFromDB() : Flow<List<ArticleEntity>>
 }

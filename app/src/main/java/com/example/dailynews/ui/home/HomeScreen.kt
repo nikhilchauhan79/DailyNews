@@ -1,5 +1,6 @@
 package com.example.dailynews.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -78,7 +79,9 @@ fun HomeScreen(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     modifier = modifier.fillMaxSize()
   ) {
-    items(articles) { article ->
+    items(articles, key = { article ->
+      "${article.articleID}-${article.isBookmarked}"
+    }) { article ->
       NewsItem(article = article, onArticleBookmarkChange = onArticleBookmarkChange)
     }
   }

@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.dailynews.data.db.entities.ArticleEntity
-import com.example.dailynews.data.network.enums.NewsCategory
 import kotlinx.coroutines.flow.Flow
 
 @Dao

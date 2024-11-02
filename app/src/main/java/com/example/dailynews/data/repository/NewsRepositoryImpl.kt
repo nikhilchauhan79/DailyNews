@@ -7,10 +7,11 @@ import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.utils.RemoteToLocalMapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -55,7 +56,7 @@ class NewsRepositoryImpl(
         localDataSource.insertAllArticles(it)
       },
       listOf(),
-      false
+      true
     )
 
 
@@ -110,6 +111,11 @@ class NewsRepositoryImpl(
     localDataSource.bookmarkArticle(articleEntity, addOrRemove)
   }
 
+  override fun getAllArticlesFromDB(): Flow<List<ArticleEntity>> {
+    return localDataSource.getAllArticlesFlow()
+  }
+
+
   private fun <A, L> performNetworkCallAndSaveData(
     fetchFromLocal: suspend () -> Flow<L>,
     fetchFromRemote: suspend () -> Flow<NetworkResult<A>>,
@@ -144,4 +150,44 @@ class NewsRepositoryImpl(
       }
     }
   }.flowOn(ioDispatcher)
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  private fun <A, L> performNetworkCallAndObserveFromDB(
+    fetchFromLocal: suspend () -> Flow<L>,
+    fetchFromRemote: suspend () -> Flow<NetworkResult<A>>,
+    mapToLocal: (A) -> L,
+    saveToDatabase: suspend (L) -> Unit,
+    defaultValue: L,
+    shouldFetchFromLocal: Boolean,
+    observeFromDB: Flow<L>
+  ): Flow<L> = flow {
+    emit(NetworkResult.Loading())
+
+    val localArticles = fetchFromLocal.invoke().firstOrNull()
+
+    when (val remoteResult = fetchFromRemote.invoke().first()) {
+      is NetworkResult.Failed -> {
+        if (shouldFetchFromLocal) {
+          emit(NetworkResult.Success<L>(localArticles ?: defaultValue))
+        } else {
+          emit(NetworkResult.Failed<L>(remoteResult.message))
+        }
+      }
+
+      is NetworkResult.Loading -> {
+//          emit(NetworkResult.Loading())
+      }
+
+      is NetworkResult.Success -> {
+        remoteResult.response?.let {
+          val mapped = mapToLocal(it)
+          saveToDatabase(mapped)
+          emit(NetworkResult.Success(mapped))
+        }
+      }
+    }
+  }.flatMapConcat {
+    observeFromDB
+  }.flowOn(ioDispatcher)
 }
+
