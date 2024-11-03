@@ -23,6 +23,9 @@ interface ArticleDao {
   @Query("select * from articleentity where isBookmarked = 1")
   fun getBookmarkedArticles(): Flow<List<ArticleEntity>>
 
+  @Query("select * from articleentity where publishedAt =:publishedAt and url = :url and urlToImage = :urlToImage")
+  fun getArticleByContent(publishedAt: String, url: String, urlToImage: String) : ArticleEntity?
+
   @Query("select * from articleentity where articleID = :id")
   fun getArticleByID(id: String): ArticleEntity
 
@@ -37,6 +40,19 @@ interface ArticleDao {
 
   @Insert
   fun insertArticles(articleEntities: List<ArticleEntity>)
+
+  @Transaction
+  fun upsertArticle(articles: List<ArticleEntity>) {
+    val freshArticles = articles.filter {
+      val duplicateArticle =
+        if (it.publishedAt != null && it.url != null && it.urlToImage != null) {
+          getArticleByContent(it.publishedAt, it.url, it.urlToImage)
+        } else null
+
+      if(duplicateArticle != null) it.category != duplicateArticle.category else true
+    }
+    insertArticles(freshArticles)
+  }
 
   @Query("delete from articleentity")
   fun deleteAllArticles()

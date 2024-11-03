@@ -9,12 +9,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 
 class NewsRepositoryImpl(
@@ -56,7 +58,8 @@ class NewsRepositoryImpl(
         localDataSource.insertAllArticles(it)
       },
       listOf(),
-      true
+      shouldFetchFromLocal = true,
+      observeData = true
     )
 
 
@@ -122,7 +125,8 @@ class NewsRepositoryImpl(
     mapToLocal: (A) -> L,
     saveToDatabase: suspend (L) -> Unit,
     defaultValue: L,
-    shouldFetchFromLocal: Boolean
+    shouldFetchFromLocal: Boolean,
+    observeData: Boolean = false,
   ): Flow<NetworkResult<L>> = flow {
     emit(NetworkResult.Loading())
 
