@@ -1,7 +1,5 @@
 package com.example.dailynews.ui.home
 
-import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +97,7 @@ fun NewsItem(
     Column(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp)
+        .padding(8.dp),
     ) {
       AsyncImage(
         model = article.urlToImage,
@@ -138,21 +135,18 @@ fun NewsItem(
 
         IconButton(
           modifier = Modifier
-            .size(32.dp)
-            .clickable {
-            },
+            .size(32.dp),
           onClick = {
             val addOrRemove: Int = if (article.isBookmarked == 0) 1 else 0
-            article.isBookmarked = addOrRemove
             onArticleBookmarkChange.invoke(article, addOrRemove)
           }
         ) {
-          if(article.isBookmarked == 1)
+          if (article.isBookmarked == 1)
             Icon(
               ImageVector.vectorResource(R.drawable.bookmark_filled),
               contentDescription = null
             )
-            else Icon(
+          else Icon(
             ImageVector.vectorResource(R.drawable.baseline_bookmark_border_24),
             contentDescription = null
           )

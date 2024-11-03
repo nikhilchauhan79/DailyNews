@@ -2,17 +2,14 @@ package com.example.dailynews.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.dailynews.data.network.NetworkResult
 import com.example.dailynews.data.network.enums.NewsCategory
 import com.example.dailynews.ui.category.ShowNewsForCategory
 import com.example.dailynews.ui.favourite.FavouriteScreen
-import com.example.dailynews.ui.home.HandleArticles
 import com.example.dailynews.ui.home.HomeScreen
 import com.example.dailynews.ui.search.SearchScreen
 import com.example.dailynews.ui.sources.SourcesScreen
